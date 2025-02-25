@@ -31,12 +31,14 @@ This project uses for-loops to create two mirrored staircase shapes. The size of
 
 ### Week 2 Projects
 
-* Caesar:
+* **Caesar:**
 A program implementing the Caesar cipher, which allows the user to shift their text by a desired number of letters. This project introduces basic encryption and string manipulation.
 
-* Scrabble:
+* **Scrabble:**
 An imitation of the Scrabble board game. It assigns specific point values to each letter of the alphabet, then compares two input strings to determine which one yields a higher total score.
-* Readability:
+
+* **Readability:**
 This program calculates a reading-level score for a given text to estimate the corresponding grade level. It is an effective tool for assessing readability, though it does not factor in word complexity. I plan to enhance this project in the future.
-* Substitution:
+
+* **Substitution:**
 An encryption tool that accepts a 26-letter key (representing a permutation of the English alphabet). It then substitutes each letter in the user’s text with the corresponding letter from the key, demonstrating more advanced cipher techniques.
