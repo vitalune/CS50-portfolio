@@ -12,6 +12,7 @@ CS50 is Harvard University's introduction to computer science- a course renowned
 
 This repository is organized to showcase my CS50 projects, arranged by week. Each weekly folder contains the assignments and projects completed during that time. For example:
 
+```
 CS50-Portfolio/
 ├── week1/
 │   └── mario-more/
@@ -20,6 +21,7 @@ CS50-Portfolio/
     ├── scrabble/
     ├── readability/
     └── substitution/
+```
 
 ## Projects
 
