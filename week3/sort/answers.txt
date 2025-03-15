@@ -1,0 +1,14 @@
+sort1 uses: Bubble Sort
+
+How do you know?: Program completed sorting random5000.txt in ~0m0.067s, and completed sorting sorted5000.txt in ~0m0.022s. This shows that the program only needed to
+iterate through the list once to detect that it has been completely sorted, which is a unique attribute of Bubble Sort.
+
+sort2 uses: Merge Sort
+
+How do you know?: Program completed sorting random5000.txt and sorted5000.5xt in ~0m0.023s, significantly faster than sort1 and sort3. Similar real time elapse
+after completing random and sorted version indicates that this isn't bubble sort.
+
+sort3 uses: Selection Sort
+
+How do you know?: Program completed sorting random5000.txt and sorted5000.txt in ~0m0.056s, significantly slower than sort2. Similar real time elapse
+after completing random and sorted version indicates that this isn't bubble sort.
