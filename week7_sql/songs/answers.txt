@@ -1,0 +1,29 @@
+- Average Energy: 0.659 (moderately high energy)
+- Average Valence: 0.484 (slightly below neutral, leaning melancholic)
+- Average Danceability: 0.716 (high danceability)
+
+This listener appears to enjoy moderately energetic, highly danceable music with a slightly melancholic or bittersweet emotional tone. Their musical taste suggests someone who likes upbeat, rhythmic songs that are good for dancing, but with emotional depth rather than purely happy vibes.
+
+Why this calculation might not be representative:
+
+1. This method assumes all 100 songs were listened to equally, but in reality, some songs are played much more frequently than others. A song played 200 times should have more influence on the aura than one played 10 times.
+
+2. The calculation doesn't account for when during the year songs were played. Recent listening habits might be more representative of current mood than songs from January.
+
+3. Songs played during workouts, parties, or relaxation might serve different purposes and reflect different aspects of personality.
+
+4. A few songs with extreme values could skew the averages, not accurately representing the listener's general preferences.
+
+Better ways to calculate audio aura:
+
+1. Weight each song by play count, so frequently played songs have more influence on the aura calculation.
+
+2. Give more weight to recently played songs, as they may better represent current musical preferences.
+
+3. Group songs by audio features and identify the most prominent clusters, rather than simple averages.
+
+4. Consider different listening contexts (workout playlists, sleep music, etc.) and calculate separate auras or weighted combinations.
+
+5. Use medians instead of means to reduce the impact of outliers.
+
+6. Focus more heavily on the top 20-30 most played songs rather than treating all 100 equally.
