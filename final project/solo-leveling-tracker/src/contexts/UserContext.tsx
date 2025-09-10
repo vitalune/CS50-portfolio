@@ -1,7 +1,6 @@
 'use client';
 
-import React, { createContext, useContext, useReducer, ReactNode, useEffect } from 'react';
-import { useLocalStorage } from '@/hooks/useLocalStorage';
+import React, { createContext, useContext, useReducer, ReactNode, useEffect, useState } from 'react';
 
 export interface UserStats {
   strength: number;
@@ -12,7 +11,6 @@ export interface UserStats {
 
 export interface ProfileData {
   username: string;
-  avatar: string;
   profilePicture?: string;
   joinDate: string;
 }
@@ -44,8 +42,7 @@ const initialState: UserState = {
   },
   profile: {
     username: 'Hunter',
-    avatar: 'warrior',
-    joinDate: new Date().toISOString(),
+    joinDate: '2025-01-01T00:00:00.000Z', // Fixed date to prevent hydration mismatch
   },
 };
 
@@ -120,18 +117,44 @@ interface UserContextType {
 const UserContext = createContext<UserContextType | undefined>(undefined);
 
 export function UserProvider({ children }: { children: ReactNode }) {
+  // Start with initial state to prevent hydration mismatch
   const [state, dispatch] = useReducer(userReducer, initialState);
-  const [storedState, setStoredState] = useLocalStorage<UserState | null>('solo-leveling-user', null);
+  const [isHydrated, setIsHydrated] = useState(false);
 
+  // Load from localStorage only on client side after hydration
   useEffect(() => {
-    if (storedState) {
-      dispatch({ type: 'LOAD_STATE', state: storedState });
+    const loadFromStorage = () => {
+      try {
+        const stored = localStorage.getItem('solo-leveling-user');
+        if (stored) {
+          const parsedState = JSON.parse(stored);
+          dispatch({ type: 'LOAD_STATE', state: parsedState });
+        } else {
+          // First time user - set current join date
+          dispatch({ 
+            type: 'UPDATE_PROFILE', 
+            profile: { joinDate: new Date().toISOString() } 
+          });
+        }
+      } catch (error) {
+        console.error('Error loading from localStorage:', error);
+      }
+      setIsHydrated(true);
+    };
+
+    loadFromStorage();
+  }, []);
+
+  // Save to localStorage only after hydration
+  useEffect(() => {
+    if (isHydrated) {
+      try {
+        localStorage.setItem('solo-leveling-user', JSON.stringify(state));
+      } catch (error) {
+        console.error('Error saving to localStorage:', error);
+      }
     }
-  }, [storedState]);
-
-  useEffect(() => {
-    setStoredState(state);
-  }, [state, setStoredState]);
+  }, [state, isHydrated]);
 
   const addXP = (amount: number) => {
     dispatch({ type: 'ADD_XP', amount });

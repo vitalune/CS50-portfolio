@@ -10,12 +10,7 @@ import {
   BarChart3, 
   Swords,
   Zap,
-  Star,
-  Sword,
-  Shield,
-  Brain,
-  Crown,
-  LucideIcon
+  Star
 } from 'lucide-react';
 import { clsx } from 'clsx';
 
@@ -46,29 +41,6 @@ export default function Sidebar() {
   const pathname = usePathname();
   const { state } = useUser();
 
-  const getAvatarIcon = (avatarType: string): LucideIcon => {
-    const avatarMap: Record<string, LucideIcon> = {
-      warrior: Sword,
-      paladin: Shield,
-      mage: Brain,
-      archer: Target,
-      assassin: Star,
-      king: Crown,
-    };
-    return avatarMap[avatarType] || User;
-  };
-
-  const getAvatarColor = (avatarType: string) => {
-    const colorMap: Record<string, string> = {
-      warrior: 'bg-red-500',
-      paladin: 'bg-yellow-500',
-      mage: 'bg-blue-500',
-      archer: 'bg-green-500',
-      assassin: 'bg-purple-500',
-      king: 'bg-amber-500',
-    };
-    return colorMap[avatarType] || 'bg-slate-500';
-  };
 
   return (
     <div className="fixed left-0 top-0 h-full w-64 bg-slate-900 border-r border-slate-700 flex flex-col">
@@ -99,12 +71,7 @@ export default function Sidebar() {
                       className="w-full h-full object-cover"
                     />
                   ) : (
-                    <div className={`w-full h-full flex items-center justify-center ${getAvatarColor(state.profile?.avatar || 'warrior')}`}>
-                      {(() => {
-                        const AvatarIcon = getAvatarIcon(state.profile?.avatar || 'warrior');
-                        return <AvatarIcon className="h-5 w-5 text-white" />;
-                      })()}
-                    </div>
+                    <User className="h-5 w-5 text-slate-300" />
                   )}
                 </div>
               </div>

@@ -2,38 +2,19 @@
 
 import { useState } from 'react';
 import { 
-  Sword, 
-  Shield, 
-  Wand2, 
-  Target, 
-  Crown, 
-  Zap,
   User,
   Upload,
   X
 } from 'lucide-react';
 import { clsx } from 'clsx';
 
-const PRESET_AVATARS = [
-  { id: 'warrior', name: 'Warrior', icon: Sword, color: 'bg-red-500' },
-  { id: 'paladin', name: 'Paladin', icon: Shield, color: 'bg-yellow-500' },
-  { id: 'mage', name: 'Mage', icon: Wand2, color: 'bg-blue-500' },
-  { id: 'archer', name: 'Archer', icon: Target, color: 'bg-green-500' },
-  { id: 'assassin', name: 'Assassin', icon: Zap, color: 'bg-purple-500' },
-  { id: 'king', name: 'Monarch', icon: Crown, color: 'bg-amber-500' },
-];
-
 interface AvatarSelectorProps {
-  selectedAvatar: string;
-  onAvatarSelect: (avatar: string) => void;
   profilePicture?: string;
   onProfilePictureChange: (file: File | null) => void;
   className?: string;
 }
 
 export default function AvatarSelector({
-  selectedAvatar,
-  onAvatarSelect,
   profilePicture,
   onProfilePictureChange,
   className
@@ -71,7 +52,7 @@ export default function AvatarSelector({
   const currentProfilePicture = uploadPreview || profilePicture;
 
   return (
-    <div className={clsx('space-y-6', className)}>
+    <div className={clsx('', className)}>
       {/* Profile Picture Upload */}
       <div>
         <h3 className="text-lg font-semibold text-white mb-4 flex items-center">
@@ -115,50 +96,6 @@ export default function AvatarSelector({
             </label>
             <p className="text-xs text-slate-400 mt-1">Max 5MB • JPG, PNG, GIF</p>
           </div>
-        </div>
-      </div>
-
-      {/* Avatar Selection */}
-      <div>
-        <h3 className="text-lg font-semibold text-white mb-4 flex items-center">
-          <Crown className="h-5 w-5 mr-2 text-yellow-400" />
-          Choose Your Class
-        </h3>
-        
-        <div className="grid grid-cols-3 gap-3">
-          {PRESET_AVATARS.map((avatar) => {
-            const Icon = avatar.icon;
-            const isSelected = selectedAvatar === avatar.id;
-            
-            return (
-              <button
-                key={avatar.id}
-                onClick={() => onAvatarSelect(avatar.id)}
-                className={clsx(
-                  'p-4 rounded-xl border-2 transition-all duration-200 hover:scale-105',
-                  isSelected
-                    ? 'border-purple-400 bg-purple-600/20 shadow-lg shadow-purple-500/25'
-                    : 'border-slate-600 bg-slate-700 hover:border-slate-500 hover:bg-slate-600'
-                )}
-              >
-                <div className="flex flex-col items-center space-y-2">
-                  <div className={clsx(
-                    'p-3 rounded-lg transition-all duration-200',
-                    avatar.color,
-                    isSelected && 'scale-110 shadow-lg'
-                  )}>
-                    <Icon className="h-6 w-6 text-white" />
-                  </div>
-                  <span className={clsx(
-                    'text-sm font-medium transition-colors',
-                    isSelected ? 'text-white' : 'text-slate-300'
-                  )}>
-                    {avatar.name}
-                  </span>
-                </div>
-              </button>
-            );
-          })}
         </div>
       </div>
     </div>

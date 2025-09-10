@@ -22,29 +22,6 @@ export default function Profile() {
   const { state, addXP, updateProfile } = useUser();
   const [isEditing, setIsEditing] = useState(false);
 
-  const getAvatarIcon = (avatarType: string): LucideIcon => {
-    const avatarMap: Record<string, LucideIcon> = {
-      warrior: Sword,
-      paladin: Shield,
-      mage: Brain,
-      archer: Target,
-      assassin: Star,
-      king: Crown,
-    };
-    return avatarMap[avatarType] || User;
-  };
-
-  const getAvatarColor = (avatarType: string) => {
-    const colorMap: Record<string, string> = {
-      warrior: 'bg-red-500',
-      paladin: 'bg-yellow-500',
-      mage: 'bg-blue-500',
-      archer: 'bg-green-500',
-      assassin: 'bg-purple-500',
-      king: 'bg-amber-500',
-    };
-    return colorMap[avatarType] || 'bg-slate-500';
-  };
 
   const handleProfileSave = (profileData: Partial<ProfileData>) => {
     updateProfile(profileData);
@@ -112,8 +89,6 @@ export default function Profile() {
     );
   }
 
-  const AvatarIcon = getAvatarIcon(state.profile.avatar);
-  const avatarColor = getAvatarColor(state.profile.avatar);
 
   return (
     <div className="space-y-6">
@@ -130,9 +105,7 @@ export default function Profile() {
                     className="w-full h-full object-cover"
                   />
                 ) : (
-                  <div className={`w-full h-full flex items-center justify-center ${avatarColor}`}>
-                    <AvatarIcon className="h-12 w-12 text-white" />
-                  </div>
+                  <User className="h-12 w-12 text-slate-300" />
                 )}
               </div>
               <div className="absolute -top-1 -right-1 bg-yellow-500 rounded-full p-1">

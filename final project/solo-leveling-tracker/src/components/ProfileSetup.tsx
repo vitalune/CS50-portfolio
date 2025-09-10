@@ -33,7 +33,6 @@ export default function ProfileSetup({
 }: ProfileSetupProps) {
   const [formData, setFormData] = useState({
     username: initialProfile.username,
-    avatar: initialProfile.avatar,
     profilePicture: initialProfile.profilePicture,
   });
   
@@ -68,9 +67,6 @@ export default function ProfileSetup({
     }
   };
 
-  const handleAvatarSelect = (avatar: string) => {
-    setFormData(prev => ({ ...prev, avatar }));
-  };
 
   const handleProfilePictureChange = (file: File | null) => {
     if (file) {
@@ -100,7 +96,6 @@ export default function ProfileSetup({
       
       onSave({
         username: formData.username.trim(),
-        avatar: formData.avatar,
         profilePicture: formData.profilePicture,
       });
       
@@ -120,7 +115,6 @@ export default function ProfileSetup({
 
   const hasChanges = 
     formData.username !== initialProfile.username ||
-    formData.avatar !== initialProfile.avatar ||
     formData.profilePicture !== initialProfile.profilePicture;
 
   return (
@@ -178,8 +172,6 @@ export default function ProfileSetup({
 
         {/* Avatar Selection */}
         <AvatarSelector
-          selectedAvatar={formData.avatar}
-          onAvatarSelect={handleAvatarSelect}
           profilePicture={formData.profilePicture}
           onProfilePictureChange={handleProfilePictureChange}
         />
