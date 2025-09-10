@@ -1,6 +1,7 @@
 'use client';
 
-import React, { createContext, useContext, useReducer, ReactNode } from 'react';
+import React, { createContext, useContext, useReducer, ReactNode, useEffect } from 'react';
+import { useLocalStorage } from '@/hooks/useLocalStorage';
 
 export interface UserStats {
   strength: number;
@@ -9,17 +10,27 @@ export interface UserStats {
   discipline: number;
 }
 
+export interface ProfileData {
+  username: string;
+  avatar: string;
+  profilePicture?: string;
+  joinDate: string;
+}
+
 export interface UserState {
   level: number;
   currentXP: number;
   xpForNextLevel: number;
   stats: UserStats;
+  profile: ProfileData;
 }
 
 type UserAction =
   | { type: 'ADD_XP'; amount: number }
   | { type: 'LEVEL_UP' }
-  | { type: 'UPDATE_STAT'; stat: keyof UserStats; value: number };
+  | { type: 'UPDATE_STAT'; stat: keyof UserStats; value: number }
+  | { type: 'UPDATE_PROFILE'; profile: Partial<ProfileData> }
+  | { type: 'LOAD_STATE'; state: UserState };
 
 const initialState: UserState = {
   level: 1,
@@ -30,6 +41,11 @@ const initialState: UserState = {
     endurance: 10,
     intelligence: 10,
     discipline: 10,
+  },
+  profile: {
+    username: 'Hunter',
+    avatar: 'warrior',
+    joinDate: new Date().toISOString(),
   },
 };
 
@@ -76,6 +92,18 @@ function userReducer(state: UserState, action: UserAction): UserState {
         },
       };
     
+    case 'UPDATE_PROFILE':
+      return {
+        ...state,
+        profile: {
+          ...state.profile,
+          ...action.profile,
+        },
+      };
+    
+    case 'LOAD_STATE':
+      return action.state;
+    
     default:
       return state;
   }
@@ -86,12 +114,24 @@ interface UserContextType {
   addXP: (amount: number) => void;
   levelUp: () => void;
   updateStat: (stat: keyof UserStats, value: number) => void;
+  updateProfile: (profile: Partial<ProfileData>) => void;
 }
 
 const UserContext = createContext<UserContextType | undefined>(undefined);
 
 export function UserProvider({ children }: { children: ReactNode }) {
   const [state, dispatch] = useReducer(userReducer, initialState);
+  const [storedState, setStoredState] = useLocalStorage<UserState | null>('solo-leveling-user', null);
+
+  useEffect(() => {
+    if (storedState) {
+      dispatch({ type: 'LOAD_STATE', state: storedState });
+    }
+  }, [storedState]);
+
+  useEffect(() => {
+    setStoredState(state);
+  }, [state, setStoredState]);
 
   const addXP = (amount: number) => {
     dispatch({ type: 'ADD_XP', amount });
@@ -105,8 +145,12 @@ export function UserProvider({ children }: { children: ReactNode }) {
     dispatch({ type: 'UPDATE_STAT', stat, value });
   };
 
+  const updateProfile = (profile: Partial<ProfileData>) => {
+    dispatch({ type: 'UPDATE_PROFILE', profile });
+  };
+
   return (
-    <UserContext.Provider value={{ state, addXP, levelUp, updateStat }}>
+    <UserContext.Provider value={{ state, addXP, levelUp, updateStat, updateProfile }}>
       {children}
     </UserContext.Provider>
   );

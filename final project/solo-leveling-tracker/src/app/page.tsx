@@ -10,7 +10,8 @@ import {
   TrendingUp,
   Calendar,
   Award,
-  Zap
+  Zap,
+  LucideIcon
 } from 'lucide-react';
 
 export default function Dashboard() {
@@ -20,14 +21,14 @@ export default function Dashboard() {
     icon: Icon, 
     label, 
     value, 
-    color 
+    color,
   }: { 
-    icon: any; 
+    icon: LucideIcon; 
     label: string; 
     value: number; 
     color: string; 
   }) => (
-    <div className="bg-slate-700 rounded-lg p-4 border border-slate-600 hover:border-purple-500/50 transition-all duration-200">
+    <div className="bg-slate-700 rounded-lg p-4 border border-slate-600 hover:border-purple-500/50 transition-all duration-200 card-hover">
       <div className="flex items-center space-x-3">
         <div className={`p-2 rounded-lg ${color}`}>
           <Icon className="h-5 w-5 text-white" />
@@ -46,7 +47,7 @@ export default function Dashboard() {
       <div className="bg-gradient-to-r from-purple-600 to-blue-600 rounded-xl p-6 text-white">
         <div className="flex items-center justify-between">
           <div>
-            <h1 className="text-3xl font-bold">Welcome back, Hunter!</h1>
+            <h1 className="text-3xl font-bold">Welcome back, {state.profile?.username || 'Hunter'}!</h1>
             <p className="text-purple-100 mt-1">
               Level {state.level} • Ready to level up your life?
             </p>
@@ -108,7 +109,7 @@ export default function Dashboard() {
       {/* Quick Actions */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {/* Today's Quests */}
-        <div className="bg-slate-700 rounded-xl p-6 border border-slate-600">
+        <div className="bg-slate-700 rounded-xl p-6 border border-slate-600 card-hover">
           <div className="flex items-center justify-between mb-4">
             <h3 className="text-lg font-semibold text-white flex items-center">
               <Target className="h-5 w-5 mr-2 text-purple-400" />
@@ -128,7 +129,7 @@ export default function Dashboard() {
         </div>
 
         {/* Weekly Goals */}
-        <div className="bg-slate-700 rounded-xl p-6 border border-slate-600">
+        <div className="bg-slate-700 rounded-xl p-6 border border-slate-600 card-hover">
           <div className="flex items-center justify-between mb-4">
             <h3 className="text-lg font-semibold text-white flex items-center">
               <TrendingUp className="h-5 w-5 mr-2 text-blue-400" />

@@ -1,6 +1,8 @@
 'use client';
 
-import { useUser } from '@/contexts/UserContext';
+import { useState } from 'react';
+import { useUser, ProfileData } from '@/contexts/UserContext';
+import ProfileSetup from '@/components/ProfileSetup';
 import { 
   User, 
   Sword, 
@@ -10,11 +12,52 @@ import {
   Award,
   TrendingUp,
   Star,
-  Crown
+  Crown,
+  Edit,
+  Calendar,
+  LucideIcon
 } from 'lucide-react';
 
 export default function Profile() {
-  const { state, addXP } = useUser();
+  const { state, addXP, updateProfile } = useUser();
+  const [isEditing, setIsEditing] = useState(false);
+
+  const getAvatarIcon = (avatarType: string): LucideIcon => {
+    const avatarMap: Record<string, LucideIcon> = {
+      warrior: Sword,
+      paladin: Shield,
+      mage: Brain,
+      archer: Target,
+      assassin: Star,
+      king: Crown,
+    };
+    return avatarMap[avatarType] || User;
+  };
+
+  const getAvatarColor = (avatarType: string) => {
+    const colorMap: Record<string, string> = {
+      warrior: 'bg-red-500',
+      paladin: 'bg-yellow-500',
+      mage: 'bg-blue-500',
+      archer: 'bg-green-500',
+      assassin: 'bg-purple-500',
+      king: 'bg-amber-500',
+    };
+    return colorMap[avatarType] || 'bg-slate-500';
+  };
+
+  const handleProfileSave = (profileData: Partial<ProfileData>) => {
+    updateProfile(profileData);
+    setIsEditing(false);
+  };
+
+  const formatJoinDate = (dateString: string) => {
+    return new Date(dateString).toLocaleDateString('en-US', {
+      year: 'numeric',
+      month: 'long',
+      day: 'numeric'
+    });
+  };
 
   const StatBar = ({ 
     icon: Icon, 
@@ -23,7 +66,7 @@ export default function Profile() {
     color,
     maxValue = 50 
   }: { 
-    icon: any; 
+    icon: LucideIcon; 
     label: string; 
     value: number; 
     color: string;
@@ -56,43 +99,87 @@ export default function Profile() {
     );
   };
 
+  if (isEditing) {
+    return (
+      <div className="space-y-6">
+        <ProfileSetup
+          initialProfile={state.profile}
+          onSave={handleProfileSave}
+          onCancel={() => setIsEditing(false)}
+          isFirstTime={false}
+        />
+      </div>
+    );
+  }
+
+  const AvatarIcon = getAvatarIcon(state.profile.avatar);
+  const avatarColor = getAvatarColor(state.profile.avatar);
+
   return (
     <div className="space-y-6">
       {/* Profile Header */}
       <div className="bg-gradient-to-r from-purple-600 via-blue-600 to-indigo-600 rounded-xl p-6 text-white">
-        <div className="flex items-center space-x-6">
-          <div className="relative">
-            <div className="w-24 h-24 bg-slate-700 rounded-full flex items-center justify-center">
-              <User className="h-12 w-12 text-slate-300" />
+        <div className="flex items-center justify-between">
+          <div className="flex items-center space-x-6">
+            <div className="relative">
+              <div className="w-24 h-24 rounded-full overflow-hidden border-2 border-white/20 bg-slate-700 flex items-center justify-center">
+                {state.profile.profilePicture ? (
+                  <img 
+                    src={state.profile.profilePicture} 
+                    alt="Profile" 
+                    className="w-full h-full object-cover"
+                  />
+                ) : (
+                  <div className={`w-full h-full flex items-center justify-center ${avatarColor}`}>
+                    <AvatarIcon className="h-12 w-12 text-white" />
+                  </div>
+                )}
+              </div>
+              <div className="absolute -top-1 -right-1 bg-yellow-500 rounded-full p-1">
+                <Crown className="h-4 w-4 text-white" />
+              </div>
             </div>
-            <div className="absolute -top-1 -right-1 bg-yellow-500 rounded-full p-1">
-              <Crown className="h-4 w-4 text-white" />
+            <div className="flex-1">
+              <h1 className="text-3xl font-bold">{state.profile.username}</h1>
+              <div className="flex items-center space-x-4 mt-2">
+                <div className="flex items-center space-x-2">
+                  <Star className="h-5 w-5 text-yellow-300" />
+                  <span className="text-xl font-semibold">Level {state.level}</span>
+                </div>
+                <div className="text-purple-100">
+                  <span className="text-sm">Total XP: </span>
+                  <span className="font-semibold">{state.currentXP + (state.level - 1) * 100}</span>
+                </div>
+              </div>
+              <div className="flex items-center space-x-4 mt-1">
+                <div className="flex items-center space-x-1 text-purple-200 text-sm">
+                  <Calendar className="h-4 w-4" />
+                  <span>Joined {formatJoinDate(state.profile.joinDate)}</span>
+                </div>
+              </div>
+              <div className="mt-3">
+                <div className="flex justify-between text-sm text-purple-100 mb-1">
+                  <span>Progress to Level {state.level + 1}</span>
+                  <span>{state.currentXP}/{state.xpForNextLevel} XP</span>
+                </div>
+                <div className="w-full bg-purple-800/50 rounded-full h-2">
+                  <div 
+                    className="h-2 bg-gradient-to-r from-yellow-400 to-yellow-300 rounded-full transition-all duration-500"
+                    style={{ width: `${(state.currentXP / state.xpForNextLevel) * 100}%` }}
+                  />
+                </div>
+              </div>
             </div>
           </div>
-          <div className="flex-1">
-            <h1 className="text-3xl font-bold">Hunter Profile</h1>
-            <div className="flex items-center space-x-4 mt-2">
-              <div className="flex items-center space-x-2">
-                <Star className="h-5 w-5 text-yellow-300" />
-                <span className="text-xl font-semibold">Level {state.level}</span>
-              </div>
-              <div className="text-purple-100">
-                <span className="text-sm">Total XP: </span>
-                <span className="font-semibold">{state.currentXP + (state.level - 1) * 100}</span>
-              </div>
-            </div>
-            <div className="mt-3">
-              <div className="flex justify-between text-sm text-purple-100 mb-1">
-                <span>Progress to Level {state.level + 1}</span>
-                <span>{state.currentXP}/{state.xpForNextLevel} XP</span>
-              </div>
-              <div className="w-full bg-purple-800/50 rounded-full h-2">
-                <div 
-                  className="h-2 bg-gradient-to-r from-yellow-400 to-yellow-300 rounded-full transition-all duration-500"
-                  style={{ width: `${(state.currentXP / state.xpForNextLevel) * 100}%` }}
-                />
-              </div>
-            </div>
+          
+          <div>
+            <button
+              onClick={() => setIsEditing(true)}
+              className="bg-white/10 hover:bg-white/20 text-white px-4 py-2 rounded-lg transition-colors flex items-center space-x-2"
+            >
+              <Edit className="h-4 w-4" />
+              <span>Edit Profile</span>
+            </button>
           </div>
         </div>
       </div>
