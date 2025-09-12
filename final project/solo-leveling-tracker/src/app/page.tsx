@@ -1,6 +1,7 @@
 'use client';
 
 import { useUser } from '@/contexts/UserContext';
+import { useSession } from 'next-auth/react';
 import XPBar from '@/components/XPBar';
 import { 
   Sword, 
@@ -11,10 +12,12 @@ import {
   Calendar,
   Award,
   Zap,
+  User,
   LucideIcon
 } from 'lucide-react';
 
 export default function Dashboard() {
+  const { data: session, status } = useSession();
   const { state } = useUser();
 
   const StatCard = ({ 
@@ -47,9 +50,17 @@ export default function Dashboard() {
       <div className="bg-gradient-to-r from-purple-600 to-blue-600 rounded-xl p-6 text-white">
         <div className="flex items-center justify-between">
           <div>
-            <h1 className="text-3xl font-bold">Welcome back, {state.profile?.username || 'Hunter'}!</h1>
-            <p className="text-purple-100 mt-1">
-              Level {state.level} • Ready to level up your life?
+            <h1 className="text-3xl font-bold">
+              Welcome back, {session?.user ? session.user.username : state.profile?.username || 'Hunter'}!
+            </h1>
+            <p className="text-purple-100 mt-1 flex items-center space-x-2">
+              <span>Level {state.level} • Ready to level up your life?</span>
+              {session?.user && (
+                <span className="inline-flex items-center px-2 py-1 text-xs bg-purple-500/30 rounded-full">
+                  <User className="h-3 w-3 mr-1" />
+                  Logged in
+                </span>
+              )}
             </p>
           </div>
           <div className="text-right">
@@ -59,6 +70,11 @@ export default function Dashboard() {
                 {state.currentXP}/{state.xpForNextLevel} XP
               </span>
             </div>
+            {session?.user && (
+              <div className="text-sm text-purple-100 mt-1">
+                Account: {session.user.email}
+              </div>
+            )}
           </div>
         </div>
         

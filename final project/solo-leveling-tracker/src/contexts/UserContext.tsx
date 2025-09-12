@@ -1,6 +1,7 @@
 'use client';
 
 import React, { createContext, useContext, useReducer, ReactNode, useEffect, useState } from 'react';
+import { useSession } from 'next-auth/react';
 
 export interface UserStats {
   strength: number;
@@ -117,44 +118,101 @@ interface UserContextType {
 const UserContext = createContext<UserContextType | undefined>(undefined);
 
 export function UserProvider({ children }: { children: ReactNode }) {
-  // Start with initial state to prevent hydration mismatch
+  const { data: session, status } = useSession();
   const [state, dispatch] = useReducer(userReducer, initialState);
-  const [isHydrated, setIsHydrated] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
 
-  // Load from localStorage only on client side after hydration
+  // Load user data from database when authenticated
   useEffect(() => {
-    const loadFromStorage = () => {
-      try {
-        const stored = localStorage.getItem('solo-leveling-user');
-        if (stored) {
-          const parsedState = JSON.parse(stored);
-          dispatch({ type: 'LOAD_STATE', state: parsedState });
-        } else {
-          // First time user - set current join date
-          dispatch({ 
-            type: 'UPDATE_PROFILE', 
-            profile: { joinDate: new Date().toISOString() } 
-          });
+    const loadUserData = async () => {
+      if (status === 'loading') return;
+      
+      if (session?.user) {
+        try {
+          const response = await fetch('/api/user');
+          if (response.ok) {
+            const { user } = await response.json();
+            dispatch({
+              type: 'LOAD_STATE',
+              state: {
+                level: user.level,
+                currentXP: user.currentXP,
+                xpForNextLevel: user.xpForNextLevel,
+                stats: {
+                  strength: user.strength,
+                  endurance: user.endurance,
+                  intelligence: user.intelligence,
+                  discipline: user.discipline,
+                },
+                profile: {
+                  username: user.username,
+                  profilePicture: user.profilePicture,
+                  joinDate: user.joinDate,
+                },
+              },
+            });
+          }
+        } catch (error) {
+          console.error('Error loading user data:', error);
         }
-      } catch (error) {
-        console.error('Error loading from localStorage:', error);
+      } else if (status === 'unauthenticated') {
+        // Use localStorage for unauthenticated users (fallback)
+        try {
+          const stored = localStorage.getItem('solo-leveling-user');
+          if (stored) {
+            const parsedState = JSON.parse(stored);
+            dispatch({ type: 'LOAD_STATE', state: parsedState });
+          }
+        } catch (error) {
+          console.error('Error loading from localStorage:', error);
+        }
       }
-      setIsHydrated(true);
+      
+      setIsLoading(false);
     };
 
-    loadFromStorage();
-  }, []);
+    loadUserData();
+  }, [session, status]);
 
-  // Save to localStorage only after hydration
+  // Save to database for authenticated users, localStorage for others
   useEffect(() => {
-    if (isHydrated) {
-      try {
-        localStorage.setItem('solo-leveling-user', JSON.stringify(state));
-      } catch (error) {
-        console.error('Error saving to localStorage:', error);
+    const saveUserData = async () => {
+      if (isLoading) return;
+
+      if (session?.user) {
+        try {
+          await fetch('/api/user', {
+            method: 'PUT',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+              level: state.level,
+              currentXP: state.currentXP,
+              xpForNextLevel: state.xpForNextLevel,
+              strength: state.stats.strength,
+              endurance: state.stats.endurance,
+              intelligence: state.stats.intelligence,
+              discipline: state.stats.discipline,
+              profilePicture: state.profile.profilePicture,
+              username: state.profile.username,
+            }),
+          });
+        } catch (error) {
+          console.error('Error saving user data:', error);
+        }
+      } else {
+        // Save to localStorage for unauthenticated users
+        try {
+          localStorage.setItem('solo-leveling-user', JSON.stringify(state));
+        } catch (error) {
+          console.error('Error saving to localStorage:', error);
+        }
       }
-    }
-  }, [state, isHydrated]);
+    };
+
+    saveUserData();
+  }, [state, session, isLoading]);
 
   const addXP = (amount: number) => {
     dispatch({ type: 'ADD_XP', amount });

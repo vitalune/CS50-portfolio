@@ -2,6 +2,7 @@
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
+import { useSession, signOut } from 'next-auth/react';
 import { useUser } from '@/contexts/UserContext';
 import { 
   Home, 
@@ -10,7 +11,9 @@ import {
   BarChart3, 
   Swords,
   Zap,
-  Star
+  Star,
+  LogOut,
+  LogIn
 } from 'lucide-react';
 import { clsx } from 'clsx';
 
@@ -39,7 +42,17 @@ const navigationItems = [
 
 export default function Sidebar() {
   const pathname = usePathname();
+  const { data: session, status } = useSession();
   const { state } = useUser();
+
+  // Don't show sidebar on auth pages
+  if (pathname === '/login' || pathname === '/signup') {
+    return null;
+  }
+
+  const handleSignOut = async () => {
+    await signOut({ callbackUrl: '/login' });
+  };
 
 
   return (
@@ -137,7 +150,28 @@ export default function Sidebar() {
       </nav>
 
       {/* Footer */}
-      <div className="p-4 border-t border-slate-700">
+      <div className="p-4 border-t border-slate-700 space-y-3">
+        {/* Authentication */}
+        {status === 'loading' ? (
+          <div className="text-center text-slate-400 text-sm">Loading...</div>
+        ) : session ? (
+          <button
+            onClick={handleSignOut}
+            className="w-full flex items-center space-x-2 px-3 py-2 text-slate-300 hover:text-white hover:bg-slate-800 rounded-lg transition-colors"
+          >
+            <LogOut className="h-4 w-4" />
+            <span className="text-sm">Sign Out</span>
+          </button>
+        ) : (
+          <Link 
+            href="/login"
+            className="w-full flex items-center space-x-2 px-3 py-2 text-slate-300 hover:text-white hover:bg-slate-800 rounded-lg transition-colors"
+          >
+            <LogIn className="h-4 w-4" />
+            <span className="text-sm">Sign In</span>
+          </Link>
+        )}
+        
         <div className="flex items-center space-x-2 text-slate-400 text-sm">
           <Zap className="h-4 w-4 text-yellow-400" />
           <span>Level up your life</span>

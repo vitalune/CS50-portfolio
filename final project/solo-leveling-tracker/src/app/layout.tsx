@@ -2,7 +2,8 @@ import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import { UserProvider } from "@/contexts/UserContext";
-import Sidebar from "@/components/Sidebar";
+import AuthSessionProvider from "@/components/SessionProvider";
+import LayoutContent from "@/components/LayoutContent";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -29,14 +30,13 @@ export default function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased bg-slate-900 text-slate-100`}
       >
-        <UserProvider>
-          <div className="flex min-h-screen">
-            <Sidebar />
-            <main className="flex-1 ml-64 p-6 bg-slate-800">
+        <AuthSessionProvider>
+          <UserProvider>
+            <LayoutContent>
               {children}
-            </main>
-          </div>
-        </UserProvider>
+            </LayoutContent>
+          </UserProvider>
+        </AuthSessionProvider>
       </body>
     </html>
   );
