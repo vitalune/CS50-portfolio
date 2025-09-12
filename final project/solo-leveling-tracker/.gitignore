@@ -20,6 +20,11 @@
 # production
 /build
 
+# claude
+/.claude/
+../.claude/
+../.playwright-mcp/
+
 # misc
 .DS_Store
 *.pem
